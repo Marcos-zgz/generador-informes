@@ -1,68 +1,201 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* src/index.css */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+/* Reset básico */
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  padding: 0;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  background-color: #f3f4f6; /* bg-gray-100 */
+  color: #111827; /* text-gray-900 */
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Header */
+.header {
+  background-color: #1e293b; /* bg-slate-800 */
+  color: white;
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+.header-content {
+  max-width: 80rem; /* max-w-7xl */
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 700; /* font-bold */
+}
+
+/* Barra de progreso */
+.progress-container {
+  width: 25%;
+  background-color: #334155; /* bg-slate-700 */
+  height: 0.5rem; /* h-2 */
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background-color: #22c55e; /* bg-green-500 */
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+}
+
+/* Layout Principal */
+.main-grid {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .main-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Panel Izquierdo (Formulario) */
+.left-panel {
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  height: fit-content;
+}
+
+/* Inputs y etiquetas */
+.label-upper {
+  display: block;
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 700;
+  color: #6b7280; /* text-gray-500 */
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.input-field, .select-field, .textarea-field {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.25rem;
+  background-color: #f8fafc; /* bg-slate-50 */
+  font-size: 0.875rem; /* text-sm */
+  margin-bottom: 1rem;
+}
+
+.input-field:focus, .select-field:focus {
+  outline: 2px solid #3b82f6;
+  border-color: transparent;
+}
+
+/* Cajas agrupadas */
+.box-gray {
+  background-color: #f9fafb; /* bg-gray-50 */
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.box-blue {
+  background-color: #eff6ff; /* bg-blue-50 */
+  padding: 0.75rem;
+  border: 1px solid #dbeafe; /* border-blue-100 */
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.btn-primary {
+  background-color: #1d4ed8; /* bg-blue-700 */
+  color: white;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  font-weight: 700;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: border-color 0.25s;
+  border: none;
+  width: 100%;
 }
-button:hover {
-  border-color: #646cff;
+.btn-primary:hover { background-color: #1e40af; }
+
+.btn-danger {
+  background-color: #dc2626; /* bg-red-600 */
+  color: white;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  font-weight: 700;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  border: none;
+  width: 100%;
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.btn-danger:hover { background-color: #b91c1c; }
+
+/* Panel Derecho (Vista Previa) */
+.right-panel {
+  background-color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 5rem;
+  height: fit-content;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.preview-header {
+  background-color: #f9fafb;
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preview-content {
+  padding: 2rem;
+  background: white;
+  min-height: 600px;
+  /* Estilos específicos del Word original */
+  font-family: Arial, sans-serif;
+  font-size: 14.6px; /* ~11pt */
+  line-height: 1.15;
+  color: #000;
+  text-align: justify;
+}
+
+/* Estilos internos del documento Word */
+.preview-content h1 { font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 12px; }
+.preview-content h3 { font-size: 14.6px; font-weight: bold; margin-top: 14px; margin-bottom: 4px; }
+.preview-content h4 { font-size: 14.6px; font-weight: bold; margin-top: 10px; margin-bottom: 2px; }
+.preview-content p { margin: 0; padding: 0; margin-bottom: 8px; }
+.preview-content ul { margin: 0 0 8px 20px; padding: 0; list-style-type: disc; }
+
+@media print {
+  .header, .left-panel, .preview-header { display: none !important; }
+  body { background: white; }
+  .main-grid { display: block; padding: 0; margin: 0; max-width: none; }
+  .right-panel { box-shadow: none; border: none; position: static; }
+  .preview-content { padding: 0; }
 }
