@@ -33,7 +33,6 @@ function App() {
     if(formData.descripcion) filled++;
     if(formData.equipo.length > 0) filled++;
     if(formData.conds.length > 0) filled++;
-    // CORRECCIÓN AQUÍ: Añadidos paréntesis a Math.min
     setProgress(Math.min(100, (filled / 6) * 100));
   }, [formData]);
 
@@ -46,15 +45,6 @@ function App() {
     } else {
       setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     }
-  };
-
-  const handleCheckbox = (id: string, field: 'equipo' | 'conds') => {
-    setFormData(prev => {
-      const current = prev[field];
-      const exists = current.includes(id);
-      const newVal = exists ? current.filter(x => x !== id) : [...current, id];
-      return { ...prev, [field]: newVal };
-    });
   };
 
   // Filtrar condiciones
@@ -112,7 +102,7 @@ function App() {
     h += pasoTxt;
     n++;
 
-    // TASAS
+    // TASAS (Modificado: Ya no muestra la nota si es Urbano)
     if (d.urbano === 'no' && (d.tasaAdm || d.tasaPub)) {
          h += `<h3 ${S.h3}>1.${n}. Cuantía de la tasa</h3>`;
          if (d.tasaAdm) h += `<h4 ${S.h4}>1.${n}.1 Tasa administrativa</h4>` + (mode==='word'?COMUNES.tasaAdmin.replace(/<p>/g,`<p ${S.p}>`):COMUNES.tasaAdmin);
@@ -121,9 +111,8 @@ function App() {
             h += `<h4 ${S.h4}>1.${n}.${sub} Tasa dominio público</h4>` + (mode==='word'?COMUNES.tasaPublico.replace(/<p>/g,`<p ${S.p}>`):COMUNES.tasaPublico);
          }
          n++;
-    } else if (d.urbano === 'si') {
-         h += `<p ${S.p} style="font-style:italic;">Nota: Se trata de un tramo urbano, por lo que no procede la aplicación de tasas administrativas ni de dominio público.</p>`;
-    }
+    } 
+    // Aquí antes estaba el "else if (urbano === 'si')" con la nota. Lo hemos borrado.
 
     h += `<h3 ${S.h3}>1.${n}. Comunicación a la Subdirección</h3>`;
     if (d.equipo.length) {
@@ -149,7 +138,7 @@ function App() {
   const generateWord = async () => {
     const content = getPreviewHTML('word');
     const full = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${content}</body></html>`;
-    const blob = await asBlob(full);
+    const blob = await asBlob(full) as Blob;
     saveAs(blob, `Informe_${formData.carretera || 'borrador'}.docx`);
   };
 
