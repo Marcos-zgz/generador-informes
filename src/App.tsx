@@ -8,20 +8,21 @@ import { saveAs } from 'file-saver';
 import emailjs from '@emailjs/browser';
 
 function App() {
-  const [formData, setFormData] = useState({
-    equipo: [] as string[],
-    carretera: '',
-    km: '',
-    margen: '',
-    urbano: 'no',
-    paso: '',
-    tasaAdm: false,
-    tasaPub: false,
-    actuacion: '',
-    descripcion: '',
-    conds: [] as string[]
-  });
-
+// 1. Estado con datos por defecto (siempre rellenados)
+const [formData, setFormData] = useState({
+  expediente: 'E-0000-26', // Dato inicial
+  equipo: ['eq1'] as string[], // Seleccionamos el primer equipo por defecto
+  carretera: 'A-000',
+  km: '0+000',
+  margen: 'derecha',
+  urbano: 'no',
+  paso: 'no',
+  tasaAdm: true,
+  tasaPub: false,
+  actuacion: 'Instalación de vallado perimetral',
+  descripcion: 'Se procede a la instalación de un cerramiento metálico de simple torsión en la zona de servidumbre para delimitar la propiedad conforme a los planos adjuntos.',
+  conds: ['c1', 'c2'] as string[] // Un par de condiciones ya marcadas
+});
   const [filterCond, setFilterCond] = useState('');
   const [progress, setProgress] = useState(0);
 
@@ -67,8 +68,8 @@ function App() {
     if(!d.carretera && !d.descripcion && d.conds.length === 0)
         return '<p style="color:#9ca3af; text-align:center; padding:1rem;">Empieza a rellenar el formulario...</p>';
 
-    let h = `<h1 ${S.h1}>INFORME DE AUTORIZACIÓN</h1>`;
-
+    let h = `<h1 ${S.h1}>INFORME DE AUTORIZACIÓN - EXP: ${formData.expediente || 'S/N'}</h1>`;
+    
     h += `<h3 ${S.h3}>1.1 Relación de actuaciones</h3>`;
     h += `<p ${S.p}>Se pretende <strong>${d.actuacion || '...'}</strong> en la margen <strong>${d.margen || '___'}</strong>, del p.k. <strong>${d.km || '...'}</strong> de la carretera <strong>${d.carretera || '...'}</strong>.</p>`;
 
@@ -134,6 +135,7 @@ function App() {
     return h;
   };
 
+
   const generateWord = async () => {
     const content = getPreviewHTML('word');
     const full = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${content}</body></html>`;
@@ -152,7 +154,6 @@ function App() {
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
     pdf.save(`Informe_${formData.carretera || 'borrador'}.pdf`);
   };
-
 // --- FUNCIÓN EMAILJS (Versión HTML con Estilos) ---
   const enviarPorEmail = () => {
     const btn = document.getElementById('btn-email');
@@ -209,7 +210,30 @@ function App() {
       <main className="main-grid">
         {/* PANEL IZQUIERDO */}
         <section className="left-panel">
+        {/* SECCIÓN DE DATOS GENERALES */}
+<div style={{ padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '0.5rem', marginBottom: '1.5rem', border: '1px solid #d1d5db' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    <label className="label-upper" style={{ color: '#1e40af', fontWeight: 'bold' }}>Nº de Expediente</label>
+    <input 
+      name="expediente" 
+      value={formData.expediente} // Importante para que se vea el valor inicial
+      className="input-field" 
+      placeholder="E-0000-26" 
+      onChange={handleChange}
+    />
+  </div>
 
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+     <div>
+        <label className="label-upper">Carretera</label>
+        <input name="carretera" value={formData.carretera} className="input-field" onChange={handleChange}/>
+     </div>
+     <div>
+        <label className="label-upper">P.K.</label>
+        <input name="km" value={formData.km} className="input-field" onChange={handleChange}/>
+     </div>
+  </div>
+</div>
             <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem'}}>
                <div>
                   <label className="label-upper">Equipo</label>
