@@ -10,7 +10,7 @@ export default defineConfig(({ command }) => {
 
   // Solo si estamos construyendo para producción (GitHub Pages), cambiamos la ruta
   if (command !== 'serve') {
-    config.base = '/generador-informes/'
+    config.base = './'
   }
 
   return config

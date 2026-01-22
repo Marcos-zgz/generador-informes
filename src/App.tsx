@@ -5,6 +5,7 @@ import html2canvas from 'html2canvas';
 // @ts-ignore
 import { asBlob } from 'html-docx-js-typescript';
 import { saveAs } from 'file-saver';
+import emailjs from '@emailjs/browser';
 
 function App() {
   const [formData, setFormData] = useState({
@@ -63,14 +64,14 @@ function App() {
         ul: mode === 'word' ? 'style="margin-top:0; margin-bottom:0;"' : ''
     };
 
-    if(!d.carretera && !d.descripcion && d.conds.length === 0) 
+    if(!d.carretera && !d.descripcion && d.conds.length === 0)
         return '<p style="color:#9ca3af; text-align:center; padding:1rem;">Empieza a rellenar el formulario...</p>';
 
     let h = `<h1 ${S.h1}>INFORME DE AUTORIZACIÓN</h1>`;
-    
+
     h += `<h3 ${S.h3}>1.1 Relación de actuaciones</h3>`;
     h += `<p ${S.p}>Se pretende <strong>${d.actuacion || '...'}</strong> en la margen <strong>${d.margen || '___'}</strong>, del p.k. <strong>${d.km || '...'}</strong> de la carretera <strong>${d.carretera || '...'}</strong>.</p>`;
-    
+
     h += `<h3 ${S.h3}>Descripción</h3>`;
     h += `<p ${S.p}>${d.descripcion || ''}</p>`;
 
@@ -102,7 +103,6 @@ function App() {
     h += pasoTxt;
     n++;
 
-    // TASAS (Modificado: Ya no muestra la nota si es Urbano)
     if (d.urbano === 'no' && (d.tasaAdm || d.tasaPub)) {
          h += `<h3 ${S.h3}>1.${n}. Cuantía de la tasa</h3>`;
          if (d.tasaAdm) h += `<h4 ${S.h4}>1.${n}.1 Tasa administrativa</h4>` + (mode==='word'?COMUNES.tasaAdmin.replace(/<p>/g,`<p ${S.p}>`):COMUNES.tasaAdmin);
@@ -111,8 +111,7 @@ function App() {
             h += `<h4 ${S.h4}>1.${n}.${sub} Tasa dominio público</h4>` + (mode==='word'?COMUNES.tasaPublico.replace(/<p>/g,`<p ${S.p}>`):COMUNES.tasaPublico);
          }
          n++;
-    } 
-    // Aquí antes estaba el "else if (urbano === 'si')" con la nota. Lo hemos borrado.
+    }
 
     h += `<h3 ${S.h3}>1.${n}. Comunicación a la Subdirección</h3>`;
     if (d.equipo.length) {
@@ -120,7 +119,7 @@ function App() {
             const item = EQUIPOS.find(e => e.id === id);
             if(item) {
                 let t = item.text;
-                if(mode==='word') t = `<p ${S.p}>${t}</p>`; 
+                if(mode==='word') t = `<p ${S.p}>${t}</p>`;
                 h += t;
             }
         });
@@ -154,6 +153,48 @@ function App() {
     pdf.save(`Informe_${formData.carretera || 'borrador'}.pdf`);
   };
 
+// --- FUNCIÓN EMAILJS (Versión HTML con Estilos) ---
+  const enviarPorEmail = () => {
+    const btn = document.getElementById('btn-email');
+    if(btn) btn.innerText = "Enviando... ⏳";
+
+    // 1. REUTILIZAMOS TU LÓGICA DE WORD
+    // Esto ya trae negritas y fuentes bonitas
+    const htmlContenido = getPreviewHTML('word');
+
+    // 2. AÑADIMOS EL MARGEN IZQUIERDO Y CONTENEDOR
+    // Envolvemos todo en un div con padding-left
+    const cuerpoHTML = `
+      <div style="font-family: Arial, sans-serif; color: #333; padding-left: 20px; line-height: 1.5;">
+        <h2 style="color: #ea580c; border-bottom: 2px solid #ea580c; padding-bottom: 5px;">Informe Generado</h2>
+        <br/>
+        ${htmlContenido}
+      </div>
+    `;
+
+    // TUS CREDENCIALES (Asegúrate que sean las que funcionaron antes)
+    const SERVICE_ID = "service_x9qtkcf"; // El que creaste nuevo
+    const TEMPLATE_ID = "template_cu8yxem";
+    const PUBLIC_KEY = "OFh90C612m0IM5AQ7"; 
+
+    const templateParams = {
+      to_name: "Jefe",
+      from_name: "Generador Informes",
+      message: cuerpoHTML, // <--- Ahora enviamos HTML, no texto plano
+      titulo_obra: formData.carretera || "Sin Identificar"
+    };
+
+    emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
+      .then((response) => {
+        console.log('SUCCESS!', response.status, response.text);
+        alert(`✅ Informe enviado con formato!`);
+        if(btn) btn.innerText = "📧 Enviar por Email";
+      }, (err) => {
+        console.error('FAILED...', err);
+        alert(`❌ Error al enviar: ${JSON.stringify(err)}`);
+        if(btn) btn.innerText = "📧 Enviar por Email";
+      });
+  };
   return (
     <div>
       <header className="header">
@@ -168,7 +209,7 @@ function App() {
       <main className="main-grid">
         {/* PANEL IZQUIERDO */}
         <section className="left-panel">
-            
+
             <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem'}}>
                <div>
                   <label className="label-upper">Equipo</label>
@@ -181,7 +222,7 @@ function App() {
                <div>
                   <label className="label-upper">Carretera</label>
                   <input name="carretera" className="input-field" placeholder="Ej. A-123" onChange={handleChange}/>
-                  
+
                   <label className="label-upper">P.K.</label>
                   <input name="km" className="input-field" placeholder="Ej. 10+500" onChange={handleChange}/>
                </div>
@@ -235,6 +276,32 @@ function App() {
                <button className="btn-primary" onClick={generateWord}>📄 WORD</button>
                <button className="btn-danger" onClick={generatePdf}>PDF</button>
             </div>
+
+            {/* BOTÓN EMAILJS */}
+            <button 
+              id="btn-email"
+              onClick={enviarPorEmail}
+              style={{
+                width: '100%',
+                marginTop: '0.75rem',
+                backgroundColor: '#f97316', 
+                color: 'white',
+                padding: '0.75rem',
+                border: 'none',
+                borderRadius: '0.25rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '0.5rem',
+                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              📧 Enviar por Email
+            </button>
+            
             <p style={{textAlign:'center', fontSize:'0.75rem', color:'#6b7280', marginTop:'0.5rem', cursor:'pointer'}} onClick={() => window.location.reload()}>Borrar todo</p>
 
         </section>
