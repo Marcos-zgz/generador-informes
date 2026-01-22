@@ -5,12 +5,12 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ command }) => {
   const config = {
     plugins: [react()],
-    base: './',
+    base: '/',
   }
 
   // Solo si estamos construyendo para producción (GitHub Pages), cambiamos la ruta
   if (command !== 'serve') {
-    config.base = '/generador-informes/'
+    config.base = './'
   }
 
   return config
