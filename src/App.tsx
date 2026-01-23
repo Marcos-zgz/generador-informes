@@ -223,7 +223,7 @@ const [formData, setFormData] = useState({
     />
   </div>
 
-  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+ {/*  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
      <div>
         <label className="label-upper">Carretera</label>
         <input name="carretera" value={formData.carretera} className="input-field" onChange={handleChange}/>
@@ -232,7 +232,8 @@ const [formData, setFormData] = useState({
         <label className="label-upper">P.K.</label>
         <input name="km" value={formData.km} className="input-field" onChange={handleChange}/>
      </div>
-  </div>
+  </div> */}
+
 </div>
             <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem'}}>
                <div>
