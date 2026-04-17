@@ -38,12 +38,11 @@ const [formData, setFormData] = useState({
     setProgress(Math.min(100, (filled / 6) * 100));
   }, [formData]);
 
-// 3. Autocompletado mediante URL (Versión Mejorada)
+// 3. Autocompletado mediante URL (Versión infalible para Equipos y Tasas)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const updates: any = {};
 
-    // Función auxiliar para limpiar el texto que viene de la URL
     const clean = (key: string) => {
       const val = params.get(key);
       return val ? decodeURIComponent(val) : null;
@@ -57,12 +56,22 @@ const [formData, setFormData] = useState({
     if (clean('margen'))     updates.margen     = clean('margen');
     if (clean('urbano'))     updates.urbano     = clean('urbano');
     
+    // Tratamos el equipo como un Array para que se seleccione en el punto 1.5
+    if (params.get('equipo')) {
+      updates.equipo = [params.get('equipo')];
+    }
+
+    // Booleano para las tasas
+    if (params.get('tasaAdm')) updates.tasaAdm = params.get('tasaAdm') === 'true';
+    if (params.get('tasaPub')) updates.tasaPub = params.get('tasaPub') === 'true';
+
+    // Array para las condiciones (IDs separados por comas)
     if (params.get('conds')) {
       updates.conds = params.get('conds')?.split(',');
     }
 
     if (Object.keys(updates).length > 0) {
-      setFormData(prev => ({ ...prev, ...updates }));
+      setFormData((prev: any) => ({ ...prev, ...updates }));
     }
   }, []);
   
