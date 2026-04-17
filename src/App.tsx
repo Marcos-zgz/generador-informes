@@ -38,6 +38,31 @@ const [formData, setFormData] = useState({
     setProgress(Math.min(100, (filled / 6) * 100));
   }, [formData]);
 
+// 3. Autocompletado mediante URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const updates: any = {};
+
+    // Mapeo de parámetros de URL a campos de formData
+    if (params.get('expediente')) updates.expediente = params.get('expediente');
+    if (params.get('carretera')) updates.carretera = params.get('carretera');
+    if (params.get('km')) updates.km = params.get('km');
+    if (params.get('actuacion')) updates.actuacion = params.get('actuacion');
+    if (params.get('descripcion')) updates.descripcion = params.get('descripcion');
+    if (params.get('margen')) updates.margen = params.get('margen');
+    if (params.get('urbano')) updates.urbano = params.get('urbano');
+    
+    // Para las condiciones (vienen separadas por comas en la URL: ?conds=c1,c2)
+    if (params.get('conds')) {
+      updates.conds = params.get('conds')?.split(',');
+    }
+
+    // Si hay actualizaciones, las aplicamos de golpe
+    if (Object.keys(updates).length > 0) {
+      setFormData(prev => ({ ...prev, ...updates }));
+    }
+  }, []);
+  
   // Manejadores de cambios
   const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
